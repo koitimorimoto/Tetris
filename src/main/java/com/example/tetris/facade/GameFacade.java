@@ -10,24 +10,24 @@ public class GameFacade {
         this.gameManager = gameManager;
     }
 
-    public void moveLeft() {
-        gameManager.moveLeft();
+    public boolean moveLeft() {
+        return gameManager.moveLeft();
     }
 
-    public void moveRight() {
-        gameManager.moveRight();
+    public boolean moveRight() {
+        return gameManager.moveRight();
     }
 
-    public void moveDown() {
-        gameManager.moveDown();
+    public boolean moveDown() {
+        return gameManager.moveDown();
     }
 
-    public void rotate() {
-        gameManager.rotate();
+    public boolean rotate() {
+        return gameManager.rotate();
     }
 
-    public void drop() {
-        gameManager.drop();
+    public boolean drop() {
+        return gameManager.drop();
     }
 
     public void togglePause() {
@@ -42,7 +42,31 @@ public class GameFacade {
         return gameManager.getVisibleCells();
     }
 
+    public boolean[][] getNextPieceShape() {
+        return gameManager.getNextPieceShape();
+    }
+
+    public boolean[][] getLandingCells() {
+        return gameManager.getLandingCells();
+    }
+
     public String getStatus() {
         return gameManager.getStatus();
+    }
+
+    public int getScore() {
+        return gameManager.getScore();
+    }
+
+    public int getLevel() {
+        return gameManager.getLevel();
+    }
+
+    public int getTotalLinesCleared() {
+        return gameManager.getTotalLinesCleared();
+    }
+
+    public boolean update(long elapsedNanos) {
+        return gameManager.update(elapsedNanos);
     }
 }

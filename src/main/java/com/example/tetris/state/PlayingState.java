@@ -11,28 +11,28 @@ public class PlayingState implements GameState {
     }
 
     @Override
-    public void moveLeft() {
-        gameManager.movePiece(-1, 0);
+    public boolean moveLeft() {
+        return gameManager.movePiece(-1, 0);
     }
 
     @Override
-    public void moveRight() {
-        gameManager.movePiece(1, 0);
+    public boolean moveRight() {
+        return gameManager.movePiece(1, 0);
     }
 
     @Override
-    public void moveDown() {
-        gameManager.movePiece(0, 1);
+    public boolean moveDown() {
+        return gameManager.movePiece(0, 1);
     }
 
     @Override
-    public void rotate() {
-        gameManager.rotatePiece();
+    public boolean rotate() {
+        return gameManager.rotatePiece();
     }
 
     @Override
-    public void drop() {
-        gameManager.dropPiece();
+    public boolean drop() {
+        return gameManager.dropPiece();
     }
 
     @Override
@@ -43,6 +43,11 @@ public class PlayingState implements GameState {
     @Override
     public void restart() {
         gameManager.restartGame();
+    }
+
+    @Override
+    public boolean update(long elapsedNanos) {
+        return gameManager.updateGame(elapsedNanos);
     }
 
     @Override

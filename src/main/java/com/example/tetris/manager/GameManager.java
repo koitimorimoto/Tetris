@@ -1,6 +1,7 @@
 package com.example.tetris.manager;
 
 import com.example.tetris.model.GameModel;
+import com.example.tetris.state.GameOverState;
 import com.example.tetris.state.GameState;
 import com.example.tetris.state.PausedState;
 import com.example.tetris.state.PlayingState;
@@ -24,24 +25,24 @@ public final class GameManager {
         restartGame();
     }
 
-    public void moveLeft() {
-        state.moveLeft();
+    public boolean moveLeft() {
+        return state.moveLeft();
     }
 
-    public void moveRight() {
-        state.moveRight();
+    public boolean moveRight() {
+        return state.moveRight();
     }
 
-    public void moveDown() {
-        state.moveDown();
+    public boolean moveDown() {
+        return state.moveDown();
     }
 
-    public void rotate() {
-        state.rotate();
+    public boolean rotate() {
+        return state.rotate();
     }
 
-    public void drop() {
-        state.drop();
+    public boolean drop() {
+        return state.drop();
     }
 
     public void togglePause() {
@@ -56,20 +57,60 @@ public final class GameManager {
         return model.getVisibleCells();
     }
 
+    public boolean[][] getNextPieceShape() {
+        return model.getNextPieceShape();
+    }
+
+    public boolean[][] getLandingCells() {
+        return model.getLandingCells();
+    }
+
     public String getStatus() {
         return state.getStatus();
     }
 
-    public void movePiece(int dx, int dy) {
-        model.movePiece(dx, dy);
+    public int getScore() {
+        return model.getScore();
     }
 
-    public void rotatePiece() {
-        model.rotatePiece();
+    public int getLevel() {
+        return model.getLevel();
     }
 
-    public void dropPiece() {
-        model.dropPiece();
+    public int getTotalLinesCleared() {
+        return model.getTotalLinesCleared();
+    }
+
+    public long getFallIntervalNanos() {
+        return model.getFallIntervalNanos();
+    }
+
+    public boolean movePiece(int dx, int dy) {
+        return model.movePiece(dx, dy);
+    }
+
+    public boolean rotatePiece() {
+        return model.rotatePiece();
+    }
+
+    public boolean dropPiece() {
+        boolean dropped = model.dropPiece();
+        if (model.isGameOver()) {
+            state = new GameOverState(this);
+        }
+        return dropped;
+    }
+
+    public boolean updateGame(long elapsedNanos) {
+        boolean changed = model.update(elapsedNanos);
+        if (model.isGameOver()) {
+            state = new GameOverState(this);
+        }
+        return changed;
+    }
+
+    public boolean update(long elapsedNanos) {
+        return state.update(elapsedNanos);
     }
 
     public void restartGame() {
@@ -83,5 +124,9 @@ public final class GameManager {
 
     public void resumeGame() {
         state = new PlayingState(this);
+    }
+
+    public void gameOverRestart() {
+        restartGame();
     }
 }

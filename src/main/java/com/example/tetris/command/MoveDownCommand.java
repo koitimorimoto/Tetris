@@ -11,7 +11,7 @@ public class MoveDownCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        gameFacade.moveDown();
+    public boolean execute() {
+        return gameFacade.moveDown();
     }
 }

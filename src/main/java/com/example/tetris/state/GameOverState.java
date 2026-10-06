@@ -2,11 +2,11 @@ package com.example.tetris.state;
 
 import com.example.tetris.manager.GameManager;
 
-public class PausedState implements GameState {
+public class GameOverState implements GameState {
 
     private final GameManager gameManager;
 
-    public PausedState(GameManager gameManager) {
+    public GameOverState(GameManager gameManager) {
         this.gameManager = gameManager;
     }
 
@@ -37,12 +37,11 @@ public class PausedState implements GameState {
 
     @Override
     public void togglePause() {
-        gameManager.resumeGame();
     }
 
     @Override
     public void restart() {
-        gameManager.restartGame();
+        gameManager.gameOverRestart();
     }
 
     @Override
@@ -52,6 +51,6 @@ public class PausedState implements GameState {
 
     @Override
     public String getStatus() {
-        return "PAUSADO — pressione P para continuar";
+        return "GAME OVER — pressione R para reiniciar";
     }
 }

@@ -11,7 +11,7 @@ public class MoveLeftCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        gameFacade.moveLeft();
+    public boolean execute() {
+        return gameFacade.moveLeft();
     }
 }

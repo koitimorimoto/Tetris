@@ -11,7 +11,7 @@ public class DropCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        gameFacade.drop();
+    public boolean execute() {
+        return gameFacade.drop();
     }
 }

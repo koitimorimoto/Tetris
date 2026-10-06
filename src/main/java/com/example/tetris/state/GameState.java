@@ -2,19 +2,21 @@ package com.example.tetris.state;
 
 public interface GameState {
 
-    void moveLeft();
+    boolean moveLeft();
 
-    void moveRight();
+    boolean moveRight();
 
-    void moveDown();
+    boolean moveDown();
 
-    void rotate();
+    boolean rotate();
 
-    void drop();
+    boolean drop();
 
     void togglePause();
 
     void restart();
+
+    boolean update(long elapsedNanos);
 
     String getStatus();
 }

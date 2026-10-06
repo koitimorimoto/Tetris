@@ -11,7 +11,7 @@ public class RotateCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        gameFacade.rotate();
+    public boolean execute() {
+        return gameFacade.rotate();
     }
 }
