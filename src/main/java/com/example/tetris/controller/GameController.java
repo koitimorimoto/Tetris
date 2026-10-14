@@ -7,6 +7,7 @@ import com.example.tetris.command.MoveLeftCommand;
 import com.example.tetris.command.MoveRightCommand;
 import com.example.tetris.command.RotateCommand;
 import com.example.tetris.facade.GameFacade;
+import com.example.tetris.audio.ArcadeSounds;
 import com.example.tetris.view.GameView;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
@@ -40,7 +41,9 @@ public class GameController {
             @Override
             public void handle(long now) {
                 if (previousFrameNanos != 0) {
+                    int linesBeforeUpdate = gameFacade.getTotalLinesCleared();
                     if (gameFacade.update(now - previousFrameNanos)) {
+                        checkLineClear(linesBeforeUpdate);
                         refreshView();
                     }
                 }
@@ -61,6 +64,15 @@ public class GameController {
         );
     }
 
+    private void checkLineClear(int linesBefore) {
+        int linesAfter = gameFacade.getTotalLinesCleared();
+        if (linesAfter > linesBefore) {
+            int cleared = linesAfter - linesBefore;
+            ArcadeSounds.lineClear(cleared);
+            gameView.animateLineClear(gameFacade.getLastClearedRows());
+        }
+    }
+
     private void handleKeyPressed(KeyEvent event) {
         KeyCode key = event.getCode();
         if (key == KeyCode.P) {
@@ -72,7 +84,18 @@ public class GameController {
             if (command == null) {
                 return;
             }
-            command.execute();
+            int linesBeforeAction = gameFacade.getTotalLinesCleared();
+            boolean succeeded = command.execute();
+            if (succeeded) {
+                if (key == KeyCode.SPACE) {
+                    ArcadeSounds.drop();
+                } else if (key == KeyCode.UP) {
+                    ArcadeSounds.rotate();
+                } else {
+                    ArcadeSounds.move();
+                }
+            }
+            checkLineClear(linesBeforeAction);
         }
         refreshView();
         event.consume();

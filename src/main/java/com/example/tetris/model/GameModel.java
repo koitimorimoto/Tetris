@@ -17,6 +17,7 @@ public class GameModel {
     private int totalLinesCleared;
     private int level;
     private boolean gameOver;
+    private int[] lastClearedRows = new int[0];
 
     public GameModel() {
         reset();
@@ -39,6 +40,7 @@ public class GameModel {
         totalLinesCleared = 0;
         level = 1;
         gameOver = false;
+        lastClearedRows = new int[0];
     }
 
     public boolean movePiece(int dx, int dy) {
@@ -157,6 +159,7 @@ public class GameModel {
 
     private void lockCurrentPiece() {
         board.lockPiece(currentPiece);
+        lastClearedRows = board.getFullRowIndices();
         int clearedLines = board.clearFullLines();
         if (clearedLines > 0) {
             recordClearedLines(clearedLines);
@@ -217,6 +220,10 @@ public class GameModel {
             }
         }
         return landingCells;
+    }
+
+    public int[] getLastClearedRows() {
+        return lastClearedRows.clone();
     }
 
     public boolean[][] getVisibleCells() {

@@ -38,6 +38,10 @@ public class GameFacade {
         gameManager.restart();
     }
 
+    public int[] getLastClearedRows() {
+        return gameManager.getLastClearedRows();
+    }
+
     public boolean[][] getVisibleCells() {
         return gameManager.getVisibleCells();
     }

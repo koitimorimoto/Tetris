@@ -53,6 +53,10 @@ public final class GameManager {
         state.restart();
     }
 
+    public int[] getLastClearedRows() {
+        return model.getLastClearedRows();
+    }
+
     public boolean[][] getVisibleCells() {
         return model.getVisibleCells();
     }

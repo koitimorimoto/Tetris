@@ -4,6 +4,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -27,6 +30,11 @@ public class GameView {
     private final Label levelValueLabel = new Label();
     private final Label linesValueLabel = new Label();
     private final HBox root;
+    private boolean[][] currentCells;
+    private boolean[][] currentLandingCells;
+    private int[] animatedRows = new int[0];
+    private double flashOpacity;
+    private Timeline lineClearTimeline;
 
     public GameView() {
         Label nextPieceLabel = new Label("Próxima peça");
@@ -61,6 +69,54 @@ public class GameView {
 
     public void render(boolean[][] cells, boolean[][] landingCells, boolean[][] nextPiece, String status,
                        int score, int level, int lines) {
+        currentCells = cells;
+        currentLandingCells = landingCells;
+        drawBoard();
+        drawNextPiece(nextPiece);
+        statusLabel.setText(status);
+        scoreValueLabel.setText(Integer.toString(score));
+        levelValueLabel.setText(Integer.toString(level));
+        linesValueLabel.setText(Integer.toString(lines));
+    }
+
+    /**
+     * Flashes the exact rows cleared by the model, while leaving gameplay/model timing untouched.
+     */
+    public void animateLineClear(int[] rows) {
+        if (rows == null || rows.length == 0) {
+            return;
+        }
+        if (lineClearTimeline != null) {
+            lineClearTimeline.stop();
+        }
+        animatedRows = rows.clone();
+        flashOpacity = 0.95;
+        drawBoard();
+
+        lineClearTimeline = new Timeline(
+                new KeyFrame(Duration.ZERO, event -> setFlash(0.95)),
+                new KeyFrame(Duration.millis(65), event -> setFlash(0.25)),
+                new KeyFrame(Duration.millis(130), event -> setFlash(0.9)),
+                new KeyFrame(Duration.millis(195), event -> setFlash(0.15)),
+                new KeyFrame(Duration.millis(260), event -> setFlash(0.75)),
+                new KeyFrame(Duration.millis(340), event -> {
+                    animatedRows = new int[0];
+                    flashOpacity = 0;
+                    drawBoard();
+                })
+        );
+        lineClearTimeline.playFromStart();
+    }
+
+    private void setFlash(double opacity) {
+        flashOpacity = opacity;
+        drawBoard();
+    }
+
+    private void drawBoard() {
+        if (currentCells == null || currentLandingCells == null) {
+            return;
+        }
         GraphicsContext graphics = canvas.getGraphicsContext2D();
         graphics.setFill(BOARD_COLOR);
         graphics.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -69,11 +125,11 @@ public class GameView {
             for (int column = 0; column < COLUMNS; column++) {
                 double x = column * CELL_SIZE;
                 double y = row * CELL_SIZE;
-                if (landingCells[row][column] && !cells[row][column]) {
+                if (currentLandingCells[row][column] && !currentCells[row][column]) {
                     graphics.setFill(LANDING_PREVIEW_COLOR);
                     graphics.fillRect(x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE - 4);
                 }
-                if (cells[row][column]) {
+                if (currentCells[row][column]) {
                     graphics.setFill(PIECE_COLOR);
                     graphics.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
                 }
@@ -82,11 +138,21 @@ public class GameView {
             }
         }
 
-        drawNextPiece(nextPiece);
-        statusLabel.setText(status);
-        scoreValueLabel.setText(Integer.toString(score));
-        levelValueLabel.setText(Integer.toString(level));
-        linesValueLabel.setText(Integer.toString(lines));
+        // Pixel-like white/gold flashes make cleared rows feel like an arcade hit.
+        for (int row : animatedRows) {
+            if (row < 0 || row >= ROWS) {
+                continue;
+            }
+            graphics.setGlobalAlpha(flashOpacity);
+            graphics.setFill(Color.WHITE);
+            graphics.fillRect(0, row * CELL_SIZE + 2, canvas.getWidth(), CELL_SIZE - 4);
+            graphics.setFill(Color.GOLD);
+            for (int column = 0; column < COLUMNS; column += 2) {
+                graphics.fillRect(column * CELL_SIZE + 2, row * CELL_SIZE + 5,
+                        CELL_SIZE - 4, CELL_SIZE - 10);
+            }
+            graphics.setGlobalAlpha(1.0);
+        }
     }
 
     private void drawNextPiece(boolean[][] shape) {

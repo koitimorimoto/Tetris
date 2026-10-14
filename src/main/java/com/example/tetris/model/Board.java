@@ -55,6 +55,24 @@ public class Board {
         }
     }
 
+
+    public int[] getFullRowIndices() {
+        int count = 0;
+        for (int row = 0; row < HEIGHT; row++) {
+            if (isFullRow(row)) {
+                count++;
+            }
+        }
+        int[] rows = new int[count];
+        int index = 0;
+        for (int row = 0; row < HEIGHT; row++) {
+            if (isFullRow(row)) {
+                rows[index++] = row;
+            }
+        }
+        return rows;
+    }
+
     public int clearFullLines() {
         int writeRow = HEIGHT - 1;
         int clearedLines = 0;
